@@ -1,0 +1,82 @@
+{
+  "note": "Exact upstream commits the vendored skills came from. Refresh one pack with: python3 tools/refresh_skills.py <owner/repo>",
+  "packs": {
+    "Jakeschincariol/instagram-agent-skill": {
+      "commit": "d03c56bb598be770c60b201f94237e5d1a4268a6",
+      "committed": "2026-09-13T07:10:29-07:00",
+      "license": "MIT",
+      "license_file": "licenses/jake-instagram-agent-skill.LICENSE",
+      "url": "https://github.com/Jakeschincariol/instagram-agent-skill"
+    },
+    "Jakeschincariol/master-skills": {
+      "commit": "b5b43e44f0a976ad25bda5095a94c161aab2f086",
+      "committed": "2026-10-04T11:24:30-04:00",
+      "license": "MIT",
+      "license_file": "licenses/jake-master-skills.LICENSE",
+      "url": "https://github.com/Jakeschincariol/master-skills"
+    },
+    "Jakeschincariol/video-production-skills": {
+      "commit": "f80248b5e2e41286a6ad5662601e0aa41e121201",
+      "committed": "2026-09-07T13:53:26-04:00",
+      "license": "NONE FOUND UPSTREAM",
+      "license_file": null,
+      "url": "https://github.com/Jakeschincariol/video-production-skills"
+    },
+    "kajisho5/ffmpeg-skill": {
+      "commit": "c559cb5fcbfbb37b8a48165b0c49e6bdfa674883",
+      "committed": "2026-11-22T14:28:11+00:00",
+      "license": "MIT",
+      "license_file": "licenses/kajisho5-ffmpeg-skill.LICENSE",
+      "url": "https://github.com/kajisho5/ffmpeg-skill"
+    },
+    "iamaanahmad/agents-video-editing-skills": {
+      "commit": "eb105c74fde767157c206aaf8fa5504d25e01f38",
+      "committed": "2026-11-11T10:32:36+05:30",
+      "license": "MIT",
+      "license_file": "licenses/iamaanahmad-agents-video-editing-skills.LICENSE",
+      "url": "https://github.com/iamaanahmad/agents-video-editing-skills"
+    },
+    "remotion-dev/skills": {
+      "commit": "6f55706d1069e512430582ad86e4e57dc07afe1b",
+      "committed": "2026-11-18T11:18:32+01:00",
+      "license": "Remotion company license (see remotion-license skill)",
+      "license_file": null,
+      "url": "https://github.com/remotion-dev/skills"
+    },
+    "DojoCodingLabs/remotion-superpowers": {
+      "commit": "970efd2d2f4ce2492231a31ee684c2ead883f4bc",
+      "committed": "2026-10-29T09:38:53-06:00",
+      "license": "MIT",
+      "license_file": "licenses/dojocodinglabs-remotion-superpowers.LICENSE",
+      "url": "https://github.com/DojoCodingLabs/remotion-superpowers"
+    },
+    "Mozahid-AIUB/MozahidFlow": {
+      "commit": "ff646d68a17e650321d9e9e466c1fa9271ce5c00",
+      "committed": "2026-10-18T08:10:44+06:00",
+      "license": "NONE FOUND UPSTREAM",
+      "license_file": "licenses/mozahidflow-sound-effects.LICENSE",
+      "url": "https://github.com/Mozahid-AIUB/MozahidFlow"
+    },
+    "JFerrerH/ai-video-editor": {
+      "commit": "d9b1cd405b49ba74f1bdbbf8f8c52633a20c0d58",
+      "committed": "2026-11-09T09:45:30-05:00",
+      "license": "NONE FOUND UPSTREAM",
+      "license_file": null,
+      "url": "https://github.com/JFerrerH/ai-video-editor"
+    },
+    "prathameshp107/video-editing": {
+      "commit": "b344da99bfaeb496c048703b82bf1a034d732f2a",
+      "committed": "2026-10-10T14:59:42+05:30",
+      "license": "NONE FOUND UPSTREAM",
+      "license_file": null,
+      "url": "https://github.com/prathameshp107/video-editing"
+    },
+    "notivn/AIEV": {
+      "commit": "e40fe034837de71a8d638ab34c71527a4b40cca8",
+      "committed": "2026-10-09T19:05:55+07:00",
+      "license": "MIT",
+      "license_file": "licenses/notivn-aiev.LICENSE",
+      "url": "https://github.com/notivn/AIEV"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "kind": "reel",
+  "out_dir": "build/2026-11-24-position-sizing",
+  "caption_preset": "bold-word",
+  "engine": "ffmpeg",
+  "wpm": 165,
+  "script": "Most traders size by confidence. Bigger when it feels obvious. That is backwards. Fix the risk at one percent of capital, then let the stop distance decide the size. Wide stop, small position. Do that for a hundred trades and you survive the ones you are wrong about.",
+  "narration_text": "Most traders size by confidence. Bigger when it feels obvious. That is backwards. Fix the risk at one percent of capital. Then let the stop distance decide the size. Wide stop, small position. Do that for a hundred trades, and you survive the ones you are wrong about.",
+  "music": "",
+  "cards": [
+    {
+      "kicker": "RULE 01",
+      "stat": "1%",
+      "headline": "Risk per trade, fixed",
+      "body": "Not confidence. Not conviction. One percent of capital, every single time."
+    },
+    {
+      "kicker": "WHY",
+      "stat": "",
+      "headline": "Confidence is not information",
+      "body": "The trade that feels obvious is the one you size biggest. That is the trade that takes the account."
+    },
+    {
+      "kicker": "THE MATHS",
+      "stat": "2% vs 1%",
+      "headline": "Four losses in a row",
+      "body": "At 2% risk: 7.8% down. At 1% risk: 3.9% down. Same four losses, same account, half the damage."
+    },
+    {
+      "kicker": "HOW",
+      "stat": "",
+      "headline": "Size from the stop",
+      "body": "Pick the stop where the idea is wrong. Then divide the risk by that distance. Wide stop means small position, automatically."
+    },
+    {
+      "kicker": "SURVIVE",
+      "stat": "100 trades",
+      "headline": "You will be wrong often",
+      "body": "The edge is not being right. It is still being here after the tenth time you were wrong."
+    }
+  ]
+}

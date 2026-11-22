@@ -1,0 +1,37 @@
+{
+  "kind": "carousel",
+  "out_dir": "build/2026-11-25-unit-economics",
+  "slides": [
+    {
+      "kicker": "ECOM",
+      "stat": "3x",
+      "headline": "ROAS is not profit",
+      "body": "A 3x return on ad spend sounds healthy. Here is the same ad set after the costs nobody puts in the dashboard."
+    },
+    {
+      "kicker": "STEP 01",
+      "stat": "-18%",
+      "headline": "Returns",
+      "body": "In apparel, 18% comes back. Every returned order still paid for the ad that sold it."
+    },
+    {
+      "kicker": "STEP 02",
+      "stat": "-12%",
+      "headline": "Shipping and the gateway",
+      "body": "The gateway takes about 2% and the return shipping is yours. Neither is in the ROAS number."
+    },
+    {
+      "kicker": "STEP 03",
+      "stat": "4.5x",
+      "headline": "The break-even ROAS",
+      "body": "With a 60% gross margin and those costs, 3x loses money and 4.5x makes a little. That is the number to target."
+    },
+    {
+      "kicker": "DO THIS",
+      "stat": "",
+      "headline": "Put the real number in the sheet",
+      "body": "Take last month's revenue. Subtract returns, shipping, gateway and ad spend. What is left is the business."
+    }
+  ],
+  "caption": "A 3x ROAS looks fine until you subtract returns, shipping and the gateway fee.\n\nSame ad set, after the real costs:\n\n3x: loses money\n4.5x: makes a little\n\nMost dashboards show the first number and hide the other three. Put them in one sheet and the answer is obvious.\n\nEducational content only. Not investment advice. Markets carry risk of loss."
+}

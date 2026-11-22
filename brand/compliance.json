@@ -1,0 +1,89 @@
+{
+  "note": "The compliance gate for a real fintech account. Edit this, not the code: the person who owns the account's risk owns this file. Patterns are Python regexes, case-insensitive. Levels: blocked_patterns refuses to publish, required_context adds a disclosure, escalate_topics sends the conversation to a human.",
+
+  "blocked_patterns": [
+    {
+      "id": "guaranteed-returns",
+      "pattern": "\\b(guarantee[sd]?|assured|sure[- ]?shot|risk[- ]?free|can'?t lose)\\b[^.!?\\n]{0,40}\\b(return|profit|money|gain|%|rupee|dollar)",
+      "why": "Promising an outcome on a financial product is a regulatory problem, not a copy problem."
+    },
+    {
+      "id": "percentage-promise",
+      "pattern": "\\b\\d{1,3}(\\.\\d+)?\\s?%\\s?(per|a|every|each)?\\s?(day|week|month|yearly|annually)\\b",
+      "why": "A stated periodic return reads as a performance promise regardless of intent."
+    },
+    {
+      "id": "double-your-money",
+      "pattern": "\\b(double|triple|10x|100x)\\b[^.!?\\n]{0,25}\\b(money|capital|account|investment)\\b",
+      "why": "Multiplier claims are the classic pump language."
+    },
+    {
+      "id": "personalised-advice",
+      "pattern": "\\b(you should|i suggest you|my advice to you|buy this now|sell now|you must buy|book profit now)\\b",
+      "why": "Personalised buy/sell instruction on an educational account is unregistered advice."
+    },
+    {
+      "id": "fake-credentials",
+      "pattern": "\\b(sebi|sec|fca|irdai|rbi)\\b[^.!?\\n]{0,20}\\b(registered|certified|approved|licensed)\\b",
+      "why": "Never claim a registration you do not hold. Put the real number in brand/credentials.json or cut the line."
+    },
+    {
+      "id": "profit-screenshot-proof",
+      "pattern": "\\b(my|this|our)\\s+(p&l|profit|pnl)\\b[^.!?\\n]{0,30}\\b(screenshot|proof|proof that|see)\\b",
+      "why": "Profit screenshots presented as proof imply repeatability. Show method, not wins."
+    },
+    {
+      "id": "urgency-fear",
+      "pattern": "\\b(crash|collapse|meltdown)\\b[^.!?\\n]{0,30}\\b(tomorrow|next week|any day|now)\\b|\\bact (now|fast|today)\\b",
+      "why": "Manufactured urgency about markets is both a compliance and a trust problem."
+    },
+    {
+      "id": "specific-tip",
+      "pattern": "\\b(buy|short|long)\\b[^.!?\\n]{0,18}?\\b(at|above|below)\\s*[₹$€]?\\s?\\d",
+      "why": "A price-level instruction is advice about a security, not education."
+    }
+  ],
+
+  "required_context": [
+    {
+      "id": "risk-disclosure",
+      "pattern": "\\b(stock|equity|option|futures?|f&o|intraday|crypto|mutual fund|nifty|banknifty|smallcap)\\b",
+      "add": "Educational content, not investment advice. Markets carry risk of loss.",
+      "applies_to": ["reel", "carousel", "single", "story"]
+    }
+  ],
+
+  "forbidden_claims": [
+    "we predict the market",
+    "no loss strategy",
+    "100% accuracy",
+    "sure profit",
+    "guaranteed income",
+    "passive income guaranteed",
+    "sebi approved"
+  ],
+
+  "disclosure_footer": "Educational content only. Not investment advice. Markets carry risk of loss.",
+
+  "escalate_topics": [
+    "tax",
+    "legal",
+    "specific stock",
+    "portfolio review",
+    "loan",
+    "insurance claim",
+    "refund",
+    "grievance",
+    "sebi complaint",
+    "money recovery",
+    "which stock",
+    "should i sell"
+  ],
+
+  "regulated_notes": [
+    "India: SEBI (Investment Advisers) Regulations require registration to give advice on securities for consideration. Educational content is the line this account walks.",
+    "Profit claims about trading are 'past performance' claims under the SEBI ad code; they cannot be presented as indicative of future results.",
+    "US: FTC endorses the 'results not typical' rule for income claims; SEC Rule 206(4)-1 covers testimonials by advisers.",
+    "Always name the risk, never the return. That is the whole rule."
+  ]
+}

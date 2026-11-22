@@ -1,0 +1,30 @@
+{
+  "name": "Your Account Name",
+  "handle": "@yourhandle",
+  "niche": "trading, personal finance and ecommerce education",
+  "audience": "25-40, salaried or small business, has lost money at least once, wants a system rather than a tip",
+  "promise": "One checkable idea per post. Explain the mechanism, never the outcome.",
+  "colours": {
+    "bg": "#0B0E14",
+    "bg_alt": "#131A24",
+    "text": "#F5F7FA",
+    "muted": "#93A1B1",
+    "accent": "#29D398",
+    "accent_alt": "#F2B33D",
+    "danger": "#F2555A"
+  },
+  "fonts": {
+    "display": "",
+    "body": ""
+  },
+  "logo": "",
+  "links": {
+    "main": "",
+    "guide": ""
+  },
+  "notes": [
+    "The colours are chosen to read on a phone in daylight: the accent is used once per card, on the number or the rule, never on body text.",
+    "Replace fonts with a path to a .ttf if you have brand fonts. Empty means the bundled Poppins/Open Sans.",
+    "This file is read by ig/render.py for every card, cover and carousel slide."
+  ]
+}

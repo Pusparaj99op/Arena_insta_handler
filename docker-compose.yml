@@ -1,0 +1,46 @@
+# The whole system in three containers. `docker compose up -d` is the shortest
+# path from a clone to something that posts.
+#
+#   webhook    the HTTP endpoint Meta calls (comments and DMs)
+#   scheduler  one tick every 10 minutes; publishes only what is approved
+#   refresh    renews the 60-day token weekly, so the account never goes quiet
+#
+# The media server is deliberately not in here: PUBLIC_MEDIA_BASE_URL has to be
+# reachable from Meta's network, which on a laptop means a tunnel and in
+# production means the host that already terminates TLS. Serve build/publish/
+# with your existing nginx/Caddy, or point the env var at an S3/R2 bucket.
+
+services:
+  webhook:
+    build: .
+    command: ["python3", "-m", "ig", "webhook", "--port", "8080"]
+    env_file: [automation/.env]
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./state:/app/state
+      - ./build:/app/build
+    restart: unless-stopped
+
+  scheduler:
+    build: .
+    # `ig tick` is idempotent, so an overlapping run cannot double-post.
+    command: >
+      sh -c "while true; do python3 -m ig tick; sleep 600; done"
+    env_file: [automation/.env]
+    volumes:
+      - ./state:/app/state
+      - ./build:/app/build
+    restart: unless-stopped
+    depends_on: [webhook]
+
+  refresh:
+    build: .
+    # Refresh the long-lived token weekly. A token that expires is an account
+    # that goes silent for a week before anyone notices.
+    command: >
+      sh -c "while true; do python3 -m ig refresh-token || true; sleep 604800; done"
+    env_file: [automation/.env]
+    volumes:
+      - ./state:/app/state
+    restart: unless-stopped
