@@ -1,0 +1,99 @@
+"""Brand kits: `brands/<slug>/brand.json` (machine-readable) next to `brand.md` (taste + rules).
+
+    from brand import load_brand
+    kit = load_brand("acme")         # brands/acme/ ; None → neutral defaults
+    kit.theme          # Remotion `brand` prop: {colors, fonts, fontFiles[{family, url, weight, style}]}
+    kit.public_files   # {"fonts/<file>": Path} to stage into the Remotion public dir
+    kit.caption_props  # brand caption overrides (size, emphSize, emphColor, top…)
+
+brand.json:
+    {"name", "colors": {bg, tint1, tint2, ink, muted, accent, success},
+     "fonts": {serif, sans, mono}, "fontFiles": [{family, file, weight? (400 | "400" | "100 800"), style?}],
+     "captions": {size?, emphSize?, emphColor?, top?}}
+Font `file`s live in `brands/<slug>/fonts/`.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+BRANDS = REPO / "brands"
+
+# Mirrors `defaultBrand` in tools/motion/src/theme.ts: a plain look that belongs to no one.
+# Fonts are CSS lists: the Mac face, then the Noto face the Linux image ships (Chromium there
+# ignores fontconfig's substitutes and would draw every role in its default serif).
+NEUTRAL = {
+    "colors": {"bg": "#F4F4F2", "tint1": "#E4E4E0", "tint2": "#D9DEE4", "ink": "#1A1A1A",
+               "muted": "#6B6B6B", "accent": "#D64545", "success": "#2F7D5B"},
+    "fonts": {"serif": 'Georgia, "Noto Serif", serif',
+              "sans": '"Helvetica Neue", "Noto Sans", sans-serif',
+              "mono": 'Menlo, "Noto Sans Mono", monospace'},
+}
+
+
+@dataclass
+class BrandKit:
+    slug: str | None
+    theme: dict
+    public_files: dict[str, Path] = field(default_factory=dict)
+    caption_props: dict = field(default_factory=dict)
+
+    @property
+    def guide(self) -> Path | None:
+        """The brand's `brand.md` (taste rules Claude reads before editing)."""
+        return BRANDS / self.slug / "brand.md" if self.slug else None
+
+
+def _luminance(hex_: str) -> float:
+    r, g, b = (int(hex_[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def ink_on_light(colors: dict) -> dict:
+    """Cards are light and take `ink` for their text, so `ink` is the dark colour of the pair whatever a kit calls
+    them: a dark-mode kit (cream ink on a dark background) would write cream on white. A dark backdrop is `dark`."""
+    if _luminance(colors["ink"]) > _luminance(colors["bg"]):
+        out = {**colors, "ink": colors["bg"], "bg": colors["ink"]}
+        # its tints were made for the dark background: on the light one they'd draw dark glows behind the text
+        for k in ("tint1", "tint2"):
+            if k in out and _luminance(out[k]) < _luminance(out["bg"]) - 0.3:
+                out[k] = _mix(out[k], out["bg"], 0.85)
+        return out
+    return colors
+
+
+def _mix(a: str, b: str, t: float) -> str:
+    """`a` moved `t` of the way to `b` (hex colours)."""
+    ca, cb = ([int(h[i:i + 2], 16) for i in (1, 3, 5)] for h in (a, b))
+    return "#" + "".join(f"{round(x + (y - x) * t):02X}" for x, y in zip(ca, cb))
+
+
+def load_brand(slug: str | None) -> BrandKit:
+    if not slug or slug == "none":
+        return BrandKit(None, {**NEUTRAL, "fontFiles": []})
+    d = BRANDS / slug
+    if not (d / "brand.json").exists():
+        raise FileNotFoundError(f"no brand kit at {d}/brand.json (copy brands/_template/)")
+    raw = json.loads((d / "brand.json").read_text())
+    font_files, public = [], {}
+    for f in raw.get("fontFiles", []):
+        src = d / "fonts" / f["file"]
+        if not src.exists():
+            raise FileNotFoundError(f"brand font missing: {src}")
+        name = f"fonts/{f['file']}"
+        public[name] = src
+        # a weight may be 400, "400" or "100 800" in the kit; Remotion gets a string either way
+        font_files.append({"family": f["family"], "url": name,
+                           **({"weight": str(f["weight"])} if "weight" in f else {}),
+                           **({"style": f["style"]} if "style" in f else {})})
+    # A role the kit leaves unset uses the kit's own face (its sans, else its first font file);
+    # a neutral face only when the kit names no font at all.
+    kit_fonts = raw.get("fonts", {})
+    own = kit_fonts.get("sans") or (font_files[0]["family"] if font_files else None)
+    theme = {"colors": ink_on_light({**NEUTRAL["colors"], **raw.get("colors", {})}),
+             "fonts": {r: kit_fonts.get(r) or own or NEUTRAL["fonts"][r] for r in NEUTRAL["fonts"]},
+             "fontFiles": font_files}
+    return BrandKit(slug, theme, public, dict(raw.get("captions", {})))

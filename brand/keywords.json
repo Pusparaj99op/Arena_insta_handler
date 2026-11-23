@@ -1,0 +1,31 @@
+{
+  "note": "Comment keywords that deliver something by DM. This is the most used automation on the account, so it is data, not code. `how_to` is the sentence the person reads: only you know whether the file is a PDF, a link, or a ManyChat flow.",
+
+  "GUIDE": {
+    "kind": "dm-file",
+    "file": "resources/position-sizing-guide.pdf",
+    "how_to": "It is the PDF here. Open it, and start on page 2 where the sizing table is.",
+    "public_reply": "sent, check your DMs"
+  },
+
+  "SHEET": {
+    "kind": "dm-file",
+    "file": "resources/risk-calculator.xlsx",
+    "how_to": "It is the sheet here. It opens in Excel or Google Sheets; type your capital in the yellow cell.",
+    "public_reply": "sent, check your DMs"
+  },
+
+  "CHECKLIST": {
+    "kind": "dm-file",
+    "file": "resources/pre-trade-checklist.pdf",
+    "how_to": "It is the checklist here. Print it if you can; it works better on paper.",
+    "public_reply": "sent, check your DMs"
+  },
+
+  "NOBODY": {
+    "kind": "noop",
+    "how_to": "Thanks for the comment.",
+    "public_reply": "",
+    "example_only": true
+  }
+}
