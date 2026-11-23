@@ -142,6 +142,34 @@ class TestCompliance(unittest.TestCase):
         text, report = compliance.finalise("Why option sellers get wiped out in expiry week.")
         self.assertIn("Not investment advice", text)
 
+    def test_unregistered_profile_blocks_recommendations(self):
+        """The account is educational and unregistered. Recommendation language,
+        targets, win rates and third-party results are all blocked, because that
+        is the line between education and advice."""
+        for text, rule in [
+            ("I recommend this stock for long term.", "recommendation-language"),
+            ("NIFTY target of 24500 by December.", "target-price"),
+            ("My students made 40,000 rupees last month.", "testimonial-results"),
+            ("This system has a 92% win rate.", "win-rate-claim"),
+            ("It is a foolproof method.", "implied-guarantee"),
+        ]:
+            report = compliance.check(text)
+            self.assertEqual(report.verdict, "BLOCK", text)
+            self.assertIn(rule, [f.rule_id for f in report.findings], text)
+
+    def test_mechanism_explanations_still_pass(self):
+        for text in [
+            "Position sizing decides how long you survive a losing streak. Two "
+            "percent risk per trade means four consecutive losses put you 7.8% down.",
+            "A 3x ROAS looks fine until you subtract returns, shipping and the "
+            "gateway fee.",
+        ]:
+            self.assertEqual(compliance.check(text).verdict, "PASS", text)
+
+    def test_profile_is_declared(self):
+        rules = compliance.load_rules()
+        self.assertEqual(rules.get("profile", {}).get("name"), "educational_unregistered")
+
     def test_tax_question_escalates(self):
         self.assertEqual(compliance.needs_human("how much tax on intraday gains?"), "tax")
 

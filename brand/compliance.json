@@ -1,6 +1,5 @@
 {
   "note": "The compliance gate for a real fintech account. Edit this, not the code: the person who owns the account's risk owns this file. Patterns are Python regexes, case-insensitive. Levels: blocked_patterns refuses to publish, required_context adds a disclosure, escalate_topics sends the conversation to a human.",
-
   "blocked_patterns": [
     {
       "id": "guaranteed-returns",
@@ -39,20 +38,48 @@
     },
     {
       "id": "specific-tip",
-      "pattern": "\\b(buy|short|long)\\b[^.!?\\n]{0,18}?\\b(at|above|below)\\s*[₹$€]?\\s?\\d",
+      "pattern": "\\b(buy|short|long)\\b[^.!?\\n]{0,18}?\\b(at|above|below)\\s*[\u20b9$\u20ac]?\\s?\\d",
       "why": "A price-level instruction is advice about a security, not education."
+    },
+    {
+      "id": "recommendation-language",
+      "pattern": "\\b(i recommend|my recommendation|top pick|best stock|you should invest|worth buying|one stock to buy|must have in portfolio)\\b",
+      "why": "Recommendation language is the line between education and advice, and an unregistered account cannot cross it."
+    },
+    {
+      "id": "target-price",
+      "pattern": "\\b(target|targets|tp)\\s*(of|at|:)?\\s*[\u20b9$\u20ac]?\\s?\\d|\\b(upside|downside)\\s+(of\\s+)?\\d{1,3}\\s?%",
+      "why": "A price target is a recommendation with a number attached."
+    },
+    {
+      "id": "win-rate-claim",
+      "pattern": "\\b\\d{1,3}\\s?%\\s?(win|success|accuracy|strike)\\s?(rate|ratio)\\b|\\bwin rate of \\d",
+      "why": "A win-rate claim is a performance claim. Unregistered accounts cannot use performance to persuade."
+    },
+    {
+      "id": "testimonial-results",
+      "pattern": "\\b(my (students?|clients?|followers?)|they)\\b[^.!?\\n]{0,30}\\b(made|earned|booked|profited)\\b[^.!?\\n]{0,20}[\u20b9$\u20ac]?\\s?\\d",
+      "why": "Third-party results are a testimonial, which is regulated advertising. Even true ones."
+    },
+    {
+      "id": "implied-guarantee",
+      "pattern": "\\b(always works|never fails|foolproof|proven system that|consistent returns|stable income from trading)\\b",
+      "why": "Implied guarantees carry the same liability as explicit ones."
     }
   ],
-
   "required_context": [
     {
       "id": "risk-disclosure",
       "pattern": "\\b(stock|equity|option|futures?|f&o|intraday|crypto|mutual fund|nifty|banknifty|smallcap)\\b",
       "add": "Educational content, not investment advice. Markets carry risk of loss.",
-      "applies_to": ["reel", "carousel", "single", "story"]
+      "applies_to": [
+        "reel",
+        "carousel",
+        "single",
+        "story"
+      ]
     }
   ],
-
   "forbidden_claims": [
     "we predict the market",
     "no loss strategy",
@@ -62,9 +89,7 @@
     "passive income guaranteed",
     "sebi approved"
   ],
-
   "disclosure_footer": "Educational content only. Not investment advice. Markets carry risk of loss.",
-
   "escalate_topics": [
     "tax",
     "legal",
@@ -77,13 +102,35 @@
     "sebi complaint",
     "money recovery",
     "which stock",
-    "should i sell"
+    "should i sell",
+    "should i buy",
+    "is it a good time",
+    "what would you do",
+    "review my portfolio",
+    "is this a good investment",
+    "will it go up",
+    "how much should i invest",
+    "can you teach me to trade",
+    "guaranteed"
   ],
-
   "regulated_notes": [
     "India: SEBI (Investment Advisers) Regulations require registration to give advice on securities for consideration. Educational content is the line this account walks.",
     "Profit claims about trading are 'past performance' claims under the SEBI ad code; they cannot be presented as indicative of future results.",
     "US: FTC endorses the 'results not typical' rule for income claims; SEC Rule 206(4)-1 covers testimonials by advisers.",
     "Always name the risk, never the return. That is the whole rule."
+  ],
+  "profile": {
+    "name": "educational_unregistered",
+    "set_by_owner": true,
+    "means": [
+      "This account publishes education only. It is not registered as an investment adviser with SEBI, the SEC, the FCA or any other regulator.",
+      "Therefore it may explain mechanisms, maths and process, and may never issue a recommendation, a target, or a claim about a person's specific situation.",
+      "It also may not use performance claims as persuasion, because without registration the ad-code safe harbour does not apply."
+    ]
+  },
+  "profile_notes": [
+    "Every rule above exists because the account is unregistered. None of them is about tone.",
+    "The safest framing in finance education is the third person explaining a mechanism, with no 'you' in the sentence that contains a number.",
+    "If the owner ever wants to give recommendations, the correct change is registration, not relaxing these rules."
   ]
 }

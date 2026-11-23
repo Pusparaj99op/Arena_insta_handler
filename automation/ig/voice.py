@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import sys
 import subprocess
 import urllib.error
 import urllib.request
@@ -177,23 +178,50 @@ def _openai_chunk(chunk: Chunk, voice: str, out: Path) -> Path:
 
 
 def _local_chunk(chunk: Chunk, out: Path) -> Path:
+    """Piper first, Kokoro second. Both offline, both free.
+
+    Piper's `--length-scale` is the one dial that matters for finance narration:
+    1.0 is audiobook pace and rushes numbers, 1.15 is measured. It is read from
+    the env so `tools/setup_voice.py --use` can set it once and every future
+    render inherits the same voice at the same pace.
+    """
     model = config.env("PIPER_MODEL") or config.env("LOCAL_TTS_MODEL")
     if shutil.which("piper") and model:
         wav = out.with_suffix(".wav")
-        proc = subprocess.run(["piper", "--model", model, "--output_file", str(wav)],
-                              input=chunk.text.encode(), capture_output=True)
+        cmd = ["piper", "--model", model, "--output_file", str(wav),
+               "--length-scale", config.env("VOICE_LENGTH_SCALE", "1.15") or "1.15",
+               "--sentence-silence", config.env("VOICE_SENTENCE_SILENCE", "0.35") or "0.35",
+               "--normalize"]
+        proc = subprocess.run(cmd, input=chunk.text.encode(), capture_output=True)
         if proc.returncode != 0:
-            raise VoiceError(f"piper failed: {proc.stderr.decode()[:300]}")
-        return wav
+            # Some installs put the CLI behind the module rather than on PATH.
+            proc = subprocess.run([sys.executable, "-m", "piper", *cmd[1:]],
+                                  input=chunk.text.encode(), capture_output=True)
+        if proc.returncode == 0 and wav.exists():
+            return wav
+        raise VoiceError(
+            f"piper failed: {proc.stderr.decode()[-300:]}\n"
+            f"Check the model path with: python3 tools/setup_voice.py --list")
     if shutil.which("kokoro"):
         proc = subprocess.run(["kokoro", "--text", chunk.text, "--output", str(out)],
                               capture_output=True)
         if proc.returncode != 0:
-            raise VoiceError(f"kokoro failed: {proc.stderr.decode()[:300]}")
+            raise VoiceError(f"kokoro failed: {proc.stderr.decode()[-300:]}")
         return out
+    if not model and _piper_module_present():
+        raise VoiceError(
+            "piper is installed but PIPER_MODEL is not set. Pick a voice once:\n"
+            "  python3 tools/setup_voice.py --voice en_US-lessac-medium --use")
     raise VoiceError(
-        "Local TTS found no usable engine. Install piper (pip install piper-tts) and "
-        "set PIPER_MODEL=/path/to/en_US-voice.onnx, or set ELEVENLABS_API_KEY.")
+        "Local TTS found no usable engine. Either:\n"
+        "  python3 -m pip install piper-tts\n"
+        "  python3 tools/setup_voice.py --voice en_US-lessac-medium --use\n"
+        "or set ELEVENLABS_API_KEY for a hosted voice.")
+
+
+def _piper_module_present() -> bool:
+    import importlib.util
+    return importlib.util.find_spec("piper") is not None
 
 
 def _concat(parts: list[Path], out: Path) -> Path:

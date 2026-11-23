@@ -6,6 +6,7 @@ at 08:00. A command that prints a table a human enjoys is a command an agent
 cannot parse.
 
     ig doctor                 what this machine can actually do
+    ig connect                one-time checklist: env, token, account, media
     ig whoami                 which account the token belongs to
     ig plan                   print the week
     ig draft <format>         create a queue item to fill in
@@ -61,6 +62,8 @@ def cmd_doctor(args) -> int:
             if config.env("OPENAI_API_KEY") else None,
             "voice_provider": config.env("VOICE_PROVIDER") or "auto",
         },
+        "compliance_profile": (compliance.load_rules().get("profile") or {}).get(
+            "name", "default"),
         "policy": {
             "autopublish": config.POLICY.autopublish,
             "autosend_dms": config.POLICY.autosend_dms,
@@ -80,6 +83,72 @@ def cmd_doctor(args) -> int:
         if missing else "configured. run `python3 -m ig whoami` to confirm the account.")
     _out(report)
     return 0
+
+
+def cmd_connect(args) -> int:
+    """Guide the one-time connection, checking each thing in the order it fails.
+
+    Written as a checklist rather than a paragraph because the failure modes are
+    ordered: a wrong account id makes every later symptom look like a bug in this
+    repo, and a token from the wrong app looks identical to an expired one.
+    """
+    steps: list[dict] = []
+    ok = True
+
+    def note(name: str, passed: bool, fix: str) -> None:
+        nonlocal ok
+        steps.append({"check": name, "ok": passed, "fix": None if passed else fix})
+        if not passed:
+            ok = False
+
+    note("automation/.env exists", (config.ROOT / "automation" / ".env").exists(),
+         "cp automation/.env.example automation/.env && chmod 600 automation/.env")
+    note("IG_USER_ID set", bool(config.env("IG_USER_ID")),
+         "Instagram app > API setup shows the professional account id")
+    note("IG_ACCESS_TOKEN set", bool(config.env("IG_ACCESS_TOKEN")),
+         "Generate in the app, then exchange for a 60-day token (SETUP.md step 3)")
+    note("META_APP_SECRET set", bool(config.env("META_APP_SECRET")),
+         "App settings > Basic > App secret. Without it every webhook POST is 403")
+    note("IG_WEBHOOK_VERIFY_TOKEN set", bool(config.env("IG_WEBHOOK_VERIFY_TOKEN")),
+         "openssl rand -hex 16")
+    note("PUBLIC_MEDIA_BASE_URL set", bool(config.env("PUBLIC_MEDIA_BASE_URL")),
+         "Meta fetches media by URL. Serve build/publish/ over HTTPS (SETUP.md step 4)")
+    note("a voice provider is configured",
+         bool(config.env("PIPER_MODEL") or config.env("ELEVENLABS_API_KEY")
+              or config.env("OPENAI_API_KEY")),
+         "Free and local: python3 -m pip install piper-tts && "
+         "python3 tools/setup_voice.py --voice en_US-lessac-medium --use")
+    note("a DM model is configured", bool(config.env("OPENAI_API_KEY")),
+         "Optional. Without it the agent drafts through the skills but cannot answer "
+         "a DM inside the 24h window")
+
+    token_ok = False
+    account = None
+    if config.env("IG_ACCESS_TOKEN") and config.env("IG_USER_ID"):
+        try:
+            account = check_token()
+            token_ok = str(account.get("user_id") or account.get("id")) == \
+                config.env("IG_USER_ID")
+            note("token works and matches IG_USER_ID", token_ok,
+                 "whoami returned a different account: the token is from another app "
+                 "or a tester account" if not token_ok else "")
+        except (GraphError, config.ConfigError) as exc:
+            note("token works and matches IG_USER_ID", False, str(exc)[:200])
+    else:
+        note("token works and matches IG_USER_ID", False, "set the two values above first")
+
+    if token_ok and account:
+        try:
+            used, total = Client().publishing_usage()
+            note("publishing quota readable", True, "")
+            account["publishing_quota"] = f"{used}/{total} used in 24h"
+        except GraphError as exc:
+            note("publishing quota readable", False, f"non-fatal: {exc}"[:160])
+
+    _out({"ready": ok, "checks": steps, "account": account,
+          "next": "all green: `python3 -m ig plan` then draft your first post"
+                  if ok else "fix the failing checks above, cheapest first"})
+    return 0 if ok else 1
 
 
 def cmd_whoami(args) -> int:
@@ -330,6 +399,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("doctor", help="what this machine can do").set_defaults(fn=cmd_doctor)
     sub.add_parser("whoami", help="which account the token belongs to").set_defaults(
         fn=cmd_whoami)
+    sub.add_parser("connect",
+                   help="one-time connection checklist, in the order it fails"
+                   ).set_defaults(fn=cmd_connect)
 
     sub.add_parser("refresh-token",
                    help="extend the 60-day token (cron weekly)"

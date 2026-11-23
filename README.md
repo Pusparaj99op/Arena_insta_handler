@@ -49,6 +49,12 @@ licenses/           every upstream license, kept with the code it covers
 
 ---
 
+## Start here for this account
+
+`START_HERE.md` is the quickstart written for the answers on record: Meta app
+already exists, free local voice, 4–5 posts a week, purely educational with no
+registration. It is shorter than SETUP.md because half the setup is already done.
+
 ## The five-minute version
 
 ```bash
@@ -176,6 +182,7 @@ for a talking number.
 
 | File | What it answers |
 | --- | --- |
+| `START_HERE.md` | The quickstart for this account's exact setup |
 | `SETUP.md` | The Meta app, the token, the webhook, media hosting — once, properly |
 | `SKILLS.md` | The 106 skills, where each came from, and which one to load when |
 | `OPERATIONS.md` | Daily and weekly rhythm, the runbook, what to do when it breaks |
